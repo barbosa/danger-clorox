@@ -3,9 +3,6 @@ module Danger
 
   class DangerClorox < Plugin
 
-    # Allows you to specify a config file location for swiftlint.
-    attr_accessor :config_file
-
     # Lints Swift files. Will fail if `swiftlint` cannot be installed correctly.
     # Generates a `markdown` list of warnings for the prose in a corpus of .markdown and .md files.
     #
@@ -29,7 +26,6 @@ module Danger
       swift_files.select! do |line| line.end_with?(".swift") end
 
       clorox_command = "clorox lint --quiet --reporter json"
-      clorox_command += " --config #{config_file}" if config_file
 
       require 'json'
       result_json = swift_files.uniq.collect { |f| JSON.parse(`#{clorox_command} --path #{f}`.strip).flatten }.flatten

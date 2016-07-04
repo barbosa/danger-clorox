@@ -10,8 +10,6 @@ module Danger
       before do
         @dangerfile = testing_dangerfile
         @clorox = testing_dangerfile.clorox
-
-        @clorox.config_file = nil
       end
 
       it "handles clorox not being installed" do
