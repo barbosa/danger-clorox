@@ -3,17 +3,17 @@ module Danger
 
   class DangerClorox < Plugin
 
-    # Lints Swift files. Will fail if `swiftlint` cannot be installed correctly.
-    # Generates a `markdown` list of warnings for the prose in a corpus of .markdown and .md files.
+    # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
+    # Generates a `markdown` list of dirty Objective-C and Swift files
     #
     # @param   [String] files
-    #          A globbed string which should return the files that you want to lint, defaults to nil.
+    #          A globbed string which should return the files that you want to check, defaults to nil.
     #          if nil, modified and added files from the diff will be used.
     # @return  [void]
     #
     def lint_files(files=nil)
       # Installs clorox if needed
-      system "brew install clorox" unless clorox_installed?
+      system "pip install clorox" unless clorox_installed?
 
       # Check that this is in the user's PATH after installing
       unless clorox_installed?
@@ -22,31 +22,16 @@ module Danger
       end
 
       # Either use files provided, or use the modified + added
-      swift_files = files ? Dir.glob(files) : (modified_files + added_files)
-      swift_files.select! do |line| line.end_with?(".swift") end
-
-      clorox_command = "clorox lint --quiet --reporter json"
+      files = files ? Dir.glob(files) : (modified_files + added_files)
 
       require 'json'
-      result_json = swift_files.uniq.collect { |f| JSON.parse(`#{clorox_command} --path #{f}`.strip).flatten }.flatten
-
-      # Convert to clorox results
-      warnings = result_json.flatten.select do |results|
-        results['severity'] == 'Warning'
-      end
-      errors = result_json.select do |results|
-        results['severity'] == 'Error'
-      end
+      result = files.uniq.collect { |f| JSON.parse(`clorox -p #{f} -i -r json`.strip).flatten }.flatten
 
       message = ''
-
-      # We got some error reports back from clorox
-      if warnings.count > 0 || errors.count > 0
-        message = '### Clorox found issues\n\n'
+      if result['status'] == 'dirty'
+          message = '### Clorox found issues\n\n'
+          message << parse_results(result['files'])
       end
-
-      message << parse_results(warnings, 'Warnings') unless warnings.empty?
-      message << parse_results(errors, 'Errors') unless errors.empty?
 
       markdown message
     end
@@ -56,18 +41,14 @@ module Danger
     #
     # @return  [String]
     #
-    def parse_results (results, heading)
+    def parse_results(results)
       message = "#### #{heading}\n\n"
 
-      message << 'File | Line | Reason |\n'
-      message << '| --- | ----- | ----- |\n'
+      message << '| File | Status |\n'
+      message << '| ---- | ------ |\n'
 
       results.each do |r|
-        filename = r['file'].split('/').last
-        line = r['line']
-        reason = r['reason']
-
-        message << "#{filename} | #{line} | #{reason} \n"
+        message << "#{r} | dirty | \n"
       end
 
       message
