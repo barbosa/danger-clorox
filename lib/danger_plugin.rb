@@ -13,7 +13,7 @@ module Danger
     #
     def check_files(files=nil)
       # Installs clorox if needed
-      system "pip install clorox" unless clorox_installed?
+      system "pip install --user clorox" unless clorox_installed?
 
       # Check that this is in the user's PATH after installing
       unless clorox_installed?
