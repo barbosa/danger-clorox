@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'danger-swiftlint'
+  spec.name          = 'danger-clorox'
   spec.version       = DangerClorox::VERSION
-  spec.authors       = ['Ash Furrow', 'David Grandinetti', 'Orta Therox']
-  spec.email         = ['ash@ashfurrow.com', 'dbgrandi@gmail.com', 'orta.therox@gmail.com']
-  spec.description   = %q{A Danger plugin for linting Swift with SwiftLint.}
-  spec.summary       = %q{A Danger plugin for linting Swift with SwiftLint.}
-  spec.homepage      = 'https://github.com/ashfurrow/danger-swiftlint'
+  spec.authors       = ['Gustavo Barbosa']
+  spec.email         = ['gustavocsb@gmail.com']
+  spec.description   = %q{A Danger plugin for checking presence of file header comments.}
+  spec.summary       = spec.description
+  spec.homepage      = 'https://github.com/barbosa/danger-clorox'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
