@@ -11,7 +11,7 @@ module Danger
     #          if nil, modified and added files from the diff will be used.
     # @return  [void]
     #
-    def lint_files(files=nil)
+    def check_files(files=nil)
       # Installs clorox if needed
       system "pip install clorox" unless clorox_installed?
 
