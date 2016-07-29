@@ -13,7 +13,7 @@ module Danger
     #
     def check_files(files=nil)
       # Installs clorox if needed
-      system "pip install --user clorox" unless clorox_installed?
+      system "pip install --target /tmp/danger_clorox clorox" unless clorox_installed?
 
       # Check that this is in the user's PATH after installing
       unless clorox_installed?
@@ -25,7 +25,7 @@ module Danger
       files = files ? Dir.glob(files) : (modified_files + added_files)
 
       require 'json'
-      result = files.uniq.collect { |f| JSON.parse(`clorox -p #{f} -i -r json`.strip).flatten }.flatten
+      result = JSON.parse(`python /tmp/danger_clorox/clorox/clorox.py -p #{files.join(" ")} -i -r json`)
 
       message = ''
       if result['status'] == 'dirty'
@@ -58,7 +58,7 @@ module Danger
     # @return  [Bool]
     #
     def clorox_installed?
-      `which clorox`.strip.empty? == false
+      Dir.exists? "/tmp/danger_clorox"
     end
   end
 end
