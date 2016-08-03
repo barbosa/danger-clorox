@@ -22,18 +22,18 @@ module Danger
       end
 
       # Either use files provided, or use the modified + added
-      files = files ? Dir.glob(files) : (modified_files + added_files)
+      files = files ? Dir.glob(files) : (modified_files + added_files).uniq
 
       require 'json'
       result = JSON.parse(`python /tmp/danger_clorox/clorox/clorox.py -p #{files.join(" ")} -i -r json`)
 
       message = ''
       if result['status'] == 'dirty'
-          message = '### Clorox found issues\n\n'
-          message << parse_results(result['files'])
+        message = "### Clorox has found issues\n"
+        message << "Please, remove the header from the files below (those comments on the top of your file):\n\n"
+        message << parse_results(result['files'])
+        markdown message
       end
-
-      markdown message
     end
 
     # Parses clorox invocation results into a string
@@ -42,13 +42,9 @@ module Danger
     # @return  [String]
     #
     def parse_results(results)
-      message = "#### #{heading}\n\n"
-
-      message << '| File | Status |\n'
-      message << '| ---- | ------ |\n'
-
+      message = ""
       results.each do |r|
-        message << "#{r} | dirty | \n"
+        message << "- #{r} :hankey:\n"
       end
 
       message
