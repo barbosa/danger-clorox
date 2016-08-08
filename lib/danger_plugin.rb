@@ -22,7 +22,7 @@ module Danger
       end
 
       # Either use files provided, or use the modified + added
-      files = files ? Dir.glob(files) : (modified_files + added_files).uniq
+      files = files ? Dir.glob(files) : (git.modified_files + git.added_files).uniq
 
       require 'json'
       result = JSON.parse(`python /tmp/danger_clorox/clorox/clorox.py -p #{files.join(" ")} -i -r json`)
