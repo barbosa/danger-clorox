@@ -3,15 +3,15 @@ module Danger
 
   class DangerClorox < Plugin
 
+    # Allows you to specify a directory from where clorox will be run.
+    attr_accessor :directory
+
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
     # Generates a `markdown` list of dirty Objective-C and Swift files
     #
-    # @param   [String] files
-    #          A globbed string which should return the files that you want to check, defaults to nil.
-    #          if nil, modified and added files from the diff will be used.
     # @return  [void]
     #
-    def check_files(files=nil)
+    def check_files
       # Installs clorox if needed
       system "pip install --target /tmp/danger_clorox clorox" unless clorox_installed?
 
@@ -21,17 +21,19 @@ module Danger
         return
       end
 
-      # Either use files provided, or use the modified + added
-      files = files ? Dir.glob(files) : (git.modified_files + git.added_files).uniq
+      clorox_command = "python /tmp/danger_clorox/clorox/clorox.py "
+      clorox_command += "--path #{directory ? directory : '.'} "
+      clorox_command += "--inspection "
+      clorox_command += "--report json"
 
       require 'json'
-      result = JSON.parse(`python /tmp/danger_clorox/clorox/clorox.py -p #{files.join(" ")} -i -r json`)
+      result_json = JSON.parse(`(#{clorox_command})`).flatten
 
       message = ''
-      if result['status'] == 'dirty'
+      if result_json['status'] == 'dirty'
         message = "### Clorox has found issues\n"
         message << "Please, remove the header from the files below (those comments on the top of your file):\n\n"
-        message << parse_results(result['files'])
+        message << parse_results(result_json['files'])
         markdown message
       end
     end
