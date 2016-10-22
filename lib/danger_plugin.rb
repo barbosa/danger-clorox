@@ -33,8 +33,8 @@ module Danger
       if result_json['status'] == 'dirty'
         message = "### Clorox has found issues\n"
         message << "Please, remove the header from the files below (those comments on the top of your file):\n\n"
-        message << result_json['files'].map do |r|
-          "- #{r}\n"
+        result_json['files'].each do |r|
+          message << "- #{r}\n"
         end
         markdown message
       end
