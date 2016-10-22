@@ -27,7 +27,7 @@ module Danger
       clorox_command += "--report json"
 
       require 'json'
-      result_json = JSON.parse(`(#{clorox_command})`).flatten
+      result_json = JSON.parse(`(#{clorox_command})`)
 
       message = ''
       if result_json['status'] == 'dirty'
