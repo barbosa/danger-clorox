@@ -15,6 +15,7 @@ gem 'danger-clorox'
 The easiest way to use is just add this to your Dangerfile:
 
 ```rb
+clorox.directories = ["YourProject", "YourProjectNotificationExtension"]
 clorox.check_files
 ```
 
