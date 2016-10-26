@@ -3,8 +3,11 @@ module Danger
 
   class DangerClorox < Plugin
 
-    # Allows you to specify a directory from where clorox will be run.
-    attr_accessor :directory
+    ROOT_DIR = "/tmp/danger_clorox"
+    EXECUTABLE = "#{ROOT_DIR}/clorox/clorox.py"
+
+    # Allows you to specify directories from where clorox will be run.
+    attr_accessor :directories
 
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
     # Generates a `markdown` list of dirty Objective-C and Swift files
@@ -13,7 +16,7 @@ module Danger
     #
     def check_files
       # Installs clorox if needed
-      system "pip install --target /tmp/danger_clorox clorox" unless clorox_installed?
+      system "pip install --target #{ROOT_DIR} clorox" unless clorox_installed?
 
       # Check that this is in the user's PATH after installing
       unless clorox_installed?
@@ -21,13 +24,13 @@ module Danger
         return
       end
 
-      clorox_command = "python /tmp/danger_clorox/clorox/clorox.py "
-      clorox_command += "--path #{directory ? directory : '.'} "
+      clorox_command = "python #{EXECUTABLE} "
+      clorox_command += "--path #{directories ? directories.join(' ') : '.'} "
       clorox_command += "--inspection "
       clorox_command += "--report json"
 
       require 'json'
-      result_json = JSON.parse(`(#{clorox_command})`)
+      result_json = JSON.parse(`#{clorox_command}`)
 
       message = ''
       if result_json['status'] == 'dirty'
@@ -40,25 +43,11 @@ module Danger
       end
     end
 
-    # Parses clorox invocation results into a string
-    # which is formatted as a markdown table.
-    #
-    # @return  [String]
-    #
-    def parse_results(results)
-      message = ""
-      results.each do |r|
-        message << "- #{r} :hankey:\n"
-      end
-
-      message
-    end
-
     # Determine if clorox is currently installed in the system paths.
     # @return  [Bool]
     #
     def clorox_installed?
-      Dir.exists? "/tmp/danger_clorox"
+      File.exists? EXECUTABLE
     end
   end
 end

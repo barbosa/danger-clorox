@@ -13,47 +13,62 @@ module Danger
       end
 
       it "handles clorox not being installed" do
-        allow(@clorox).to receive(:`).with("which clorox").and_return("")
+        allow(File).to receive(:exists?).with(Danger::DangerClorox::EXECUTABLE).and_return(false)
         expect(@clorox.clorox_installed?).to be_falsy
       end
 
       it "handles clorox being installed" do
-        allow(@clorox).to receive(:`).with("which clorox").and_return("/bin/wherever/clorox")
+        allow(File).to receive(:exists?).with(Danger::DangerClorox::EXECUTABLE).and_return(true)
         expect(@clorox.clorox_installed?).to be_truthy
       end
 
-      describe :lint_files do
-        before do
-          # So it doesn't try to install on your computer
-          allow(@clorox).to receive(:`).with("which clorox").and_return("/bin/wheverever/clorox")
+      it "handles a single directory" do
+        allow(File).to receive(:exists?).with(Danger::DangerClorox::EXECUTABLE).and_return(true)
 
-          # Set up our stubbed JSON response
-          @clorox_response = '[{"reason": "Force casts should be avoided.", "file": "/User/me/this_repo/spec/fixtures/SwiftFile.swift", "line": 13, "severity": "Error" }]'
+        @clorox_response = '{"status": "dirty", "files": ["some/path/FileA.swift", "some/path/FileB.m"]}'
+        allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir --inspection --report json").and_return(@clorox_response)
+
+        @clorox.directories = ["some/dir"]
+        @clorox.check_files
+      end
+
+      it "handles multiple directories" do
+        allow(File).to receive(:exists?).with(Danger::DangerClorox::EXECUTABLE).and_return(true)
+
+        @clorox_response = '{"status": "dirty", "files": ["some/path/FileA.swift", "some/path/FileB.m"]}'
+        allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir some/path --inspection --report json").and_return(@clorox_response)
+
+        @clorox.directories = ["some/dir", "some/path"]
+        @clorox.check_files
+      end
+
+      describe :check_files do
+        before do
+          allow(File).to receive(:exists?).with(Danger::DangerClorox::EXECUTABLE).and_return(true)
         end
 
-        it 'handles a known Clorox report' do
-          allow(@clorox).to receive(:`).with('clorox lint --quiet --reporter json --path spec/fixtures/SwiftFile.swift').and_return(@clorox_response)
+        it 'handles a dirty clorox report' do
+          @clorox_response = '{"status": "dirty", "files": ["some/path/FileA.swift", "some/path/FileB.m"]}'
+          allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir --inspection --report json").and_return(@clorox_response)
 
-          # Do it
-          @clorox.lint_files("spec/fixtures/*.swift")
+          @clorox.directories = ["some/dir"]
+          @clorox.check_files
 
           output = @clorox.status_report[:markdowns].first
 
-          expect(output).to_not be_empty
-
-          # A title
-          expect(output).to include("Clorox found issues")
-          # A warning
-          expect(output).to include("SwiftFile.swift | 13 | Force casts should be avoided.")
+          expect(output).to include("Clorox has found issues")
+          expect(output).to include("- some/path/FileA.swift")
+          expect(output).to include("- some/path/FileB.m")
         end
 
-        it 'handles no files' do
-          allow(@clorox).to receive(:modified_files).and_return('spec/fixtures/SwiftFile.swift')
-          allow(@clorox).to receive(:`).with('clorox lint --quiet --reporter json --path spec/fixtures/SwiftFile.swift').and_return(@clorox_response)
+        it 'handles a clean clorox report' do
+          @clorox_response = '{"status": "clean", "files": []}'
+          allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir --inspection --report json").and_return(@clorox_response)
 
-          @clorox.lint_files("spec/fixtures/*.swift")
+          @clorox.directories = ["some/dir"]
+          @clorox.check_files
 
-          expect(@clorox.status_report[:markdowns].first).to_not be_empty
+          expect(@clorox.status_report[:markdowns].first).to be_nil
         end
 
       end
