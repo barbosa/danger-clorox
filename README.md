@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/barbosa/danger-clorox.svg?style=svg)](https://circleci.com/gh/barbosa/danger-clorox)
+
 # Danger Clorox
 
 A [Danger](https://github.com/danger/danger) plugin for [Clorox](https://github.com/barbosa/clorox) that runs on macOS.
