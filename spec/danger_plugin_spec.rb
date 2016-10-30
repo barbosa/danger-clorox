@@ -56,9 +56,9 @@ module Danger
 
           output = @clorox.status_report[:markdowns].first
 
-          expect(output).to include("Clorox has found issues")
-          expect(output).to include("- some/path/FileA.swift")
-          expect(output).to include("- some/path/FileB.m")
+          expect(output.message).to include("Clorox has found issues")
+          expect(output.message).to include("- some/path/FileA.swift")
+          expect(output.message).to include("- some/path/FileB.m")
         end
 
         it 'handles a clean clorox report' do
