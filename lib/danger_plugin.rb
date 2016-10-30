@@ -1,12 +1,29 @@
 module Danger
 
 
+  # Checks the presence of Xcode file headers.
+  # This is done using the [clorox](https://pypi.python.org/pypi/clorox) python egg.
+  # Results are passed out as a list in markdown.
+  #
+  # @example Running clorox from current directory
+  #
+  #          # clorox.check_files
+  #
+  # @example Running clorox from specific directories
+  #
+  #          clorox.directories = ["MyApp", "MyAppTests", "MyAppExtension"]
+  #          clorox.check_files
+  #
+  # @tags xcode, clorox, comments
+  #
   class DangerClorox < Plugin
 
     ROOT_DIR = "/tmp/danger_clorox"
     EXECUTABLE = "#{ROOT_DIR}/clorox/clorox.py"
 
     # Allows you to specify directories from where clorox will be run.
+    # defaults to `["."]` when it's nil.
+    # @return [Array<String>]
     attr_accessor :directories
 
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
