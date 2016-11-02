@@ -28,8 +28,7 @@ module Danger
         @clorox_response = '{"status": "dirty", "files": ["some/path/FileA.swift", "some/path/FileB.m"]}'
         allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir --inspection --report json").and_return(@clorox_response)
 
-        @clorox.directories = ["some/dir"]
-        @clorox.check_files
+        @clorox.check ["some/dir"]
       end
 
       it "handles multiple directories" do
@@ -38,8 +37,7 @@ module Danger
         @clorox_response = '{"status": "dirty", "files": ["some/path/FileA.swift", "some/path/FileB.m"]}'
         allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir some/path --inspection --report json").and_return(@clorox_response)
 
-        @clorox.directories = ["some/dir", "some/path"]
-        @clorox.check_files
+        @clorox.check ["some/dir", "some/path"]
       end
 
       describe :check_files do
@@ -51,22 +49,18 @@ module Danger
           @clorox_response = '{"status": "dirty", "files": ["some/path/FileA.swift", "some/path/FileB.m"]}'
           allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir --inspection --report json").and_return(@clorox_response)
 
-          @clorox.directories = ["some/dir"]
-          @clorox.check_files
+          @clorox.check ["some/dir"]
 
-          output = @clorox.status_report[:markdowns].first
-
-          expect(output.message).to include("Clorox has found issues")
-          expect(output.message).to include("- some/path/FileA.swift")
-          expect(output.message).to include("- some/path/FileB.m")
+          warnings = @clorox.status_report[:warnings]
+          expect(warnings).to include("some/path/FileA.swift contains file header")
+          expect(warnings).to include("some/path/FileB.m contains file header")
         end
 
         it 'handles a clean clorox report' do
           @clorox_response = '{"status": "clean", "files": []}'
           allow(@clorox).to receive(:`).with("python #{Danger::DangerClorox::EXECUTABLE} --path some/dir --inspection --report json").and_return(@clorox_response)
 
-          @clorox.directories = ["some/dir"]
-          @clorox.check_files
+          @clorox.check ["some/dir"]
 
           expect(@clorox.status_report[:markdowns].first).to be_nil
         end
