@@ -14,16 +14,29 @@ gem 'danger-clorox'
 
 ## Usage
 
-The easiest way to use is just add this to your Dangerfile:
+### Basic
 
+Add the following line to your Danger file to check files inside the current directory:
 ```rb
-clorox.directories = ["YourProject", "YourProjectNotificationExtension"]
-clorox.check_files
+clorox.check
+```
+
+### Advanced
+
+Specify the directories where you want to run the script:
+```rb
+clorox.check ["YourProject", "YourProjectNotificationExtension"]
+```
+
+Set the script level so it displays failures/warnings in the specific markdown table
+```rb
+clorox.level = "failure"
+clorox.check ["YourProject", "YourProjectNotificationExtension"]
 ```
 
 ## Attribution
 
-Original structure, sequence, and organization of repo taken from [danger-prose](https://github.com/dbgrandi/danger-prose) by [David Grandinetti](https://github.com/dbgrandi/).
+Original structure, sequence, and organization of repo taken from [danger-prose](https://github.com/dbgrandi/danger-prose) by [David Grandinetti](https://github.com/dbgrandi/) and [danger-swiftlint](https://github.com/ashfurrow/danger-swiftlint) by [Ash Furrow](https://github.com/ashfurrow/).
 
 ## License
 
