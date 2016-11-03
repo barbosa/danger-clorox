@@ -21,6 +21,11 @@ module Danger
     ROOT_DIR = "/tmp/danger_clorox"
     EXECUTABLE = "#{ROOT_DIR}/clorox/clorox.py"
 
+    LEVEL_WARNING = "warning"
+    LEVEL_FAILURE = "failure"
+
+    attr_accessor :level
+
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
     # Generates a `markdown` list of dirty Objective-C and Swift files
     #
@@ -44,7 +49,12 @@ module Danger
 
       require 'json'
       result = JSON.parse(`#{clorox_command}`)
-      result['files'].each { |file| warn("#{file} contains file header", sticky: false) } unless result['status'] == 'clean'
+      if result['status'] == 'dirty'
+        result['files'].each do |file|
+          message = "#{file} contains file header"
+          level == LEVEL_FAILURE ? fail(message) : warn(message)
+        end
+      end
     end
 
     # Determine if clorox is currently installed in the system paths.
