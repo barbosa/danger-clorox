@@ -14,6 +14,7 @@ module Danger
   #          clorox.directories = ["MyApp", "MyAppTests", "MyAppExtension"]
   #          clorox.check_files
   #
+  # @see barbosa/danger-clorox
   # @tags xcode, clorox, comments
   #
   class DangerClorox < Plugin
@@ -24,6 +25,11 @@ module Danger
     LEVEL_WARNING = "warning"
     LEVEL_FAILURE = "failure"
 
+    # Allows you to set a level to the checker
+    # Possible values are "warning" and "failure"
+    # defaults to "warning"
+    #
+    # @return [String]
     attr_accessor :level
 
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
