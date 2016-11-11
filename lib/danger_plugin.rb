@@ -57,7 +57,7 @@ module Danger
       result = JSON.parse(`#{clorox_command}`)
       if result['status'] == 'dirty'
         result['files'].each do |file|
-          message = "#{file} contains file header"
+          message = "#{file} contains Xcode's file header"
           level == LEVEL_FAILURE ? fail(message) : warn(message)
         end
       end

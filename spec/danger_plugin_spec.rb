@@ -52,8 +52,8 @@ module Danger
           @clorox.check ["some/dir"]
 
           warnings = @clorox.status_report[:warnings]
-          expect(warnings).to include("some/path/FileA.swift contains file header")
-          expect(warnings).to include("some/path/FileB.m contains file header")
+          expect(warnings).to include("some/path/FileA.swift contains Xcode's file header")
+          expect(warnings).to include("some/path/FileB.m contains Xcode's file header")
         end
 
         it 'handles a clean clorox report' do
