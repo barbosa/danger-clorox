@@ -14,6 +14,7 @@ module Danger
   #          clorox.directories = ["MyApp", "MyAppTests", "MyAppExtension"]
   #          clorox.check_files
   #
+  # @see barbosa/danger-clorox
   # @tags xcode, clorox, comments
   #
   class DangerClorox < Plugin
@@ -21,17 +22,23 @@ module Danger
     ROOT_DIR = "/tmp/danger_clorox"
     EXECUTABLE = "#{ROOT_DIR}/clorox/clorox.py"
 
-    # Allows you to specify directories from where clorox will be run.
-    # defaults to `["."]` when it's nil.
-    # @return [Array<String>]
-    attr_accessor :directories
+    LEVEL_WARNING = "warning"
+    LEVEL_FAILURE = "failure"
+
+    # Allows you to set a level to the checker
+    # Possible values are "warning" and "failure"
+    # defaults to "warning"
+    #
+    # @return [String]
+    attr_accessor :level
 
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
     # Generates a `markdown` list of dirty Objective-C and Swift files
     #
-    # @return  [void]
+    # @param directories [Array<String>] Directories from where clorox will be run. Defaults to current dir.
+    # @return [void]
     #
-    def check_files
+    def check(directories=["."])
       # Installs clorox if needed
       system "pip install --target #{ROOT_DIR} clorox" unless clorox_installed?
 
@@ -47,16 +54,12 @@ module Danger
       clorox_command += "--report json"
 
       require 'json'
-      result_json = JSON.parse(`#{clorox_command}`)
-
-      message = ''
-      if result_json['status'] == 'dirty'
-        message = "### Clorox has found issues\n"
-        message << "Please, remove the header from the files below (those comments on the top of your file):\n\n"
-        result_json['files'].each do |r|
-          message << "- #{r}\n"
+      result = JSON.parse(`#{clorox_command}`)
+      if result['status'] == 'dirty'
+        result['files'].each do |file|
+          message = "#{file} contains Xcode's file header"
+          level == LEVEL_FAILURE ? fail(message) : warn(message)
         end
-        markdown message
       end
     end
 
