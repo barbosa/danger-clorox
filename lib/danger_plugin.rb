@@ -7,12 +7,11 @@ module Danger
   #
   # @example Running clorox from current directory
   #
-  #          # clorox.check_files
+  #          clorox.check
   #
   # @example Running clorox from specific directories
   #
-  #          clorox.directories = ["MyApp", "MyAppTests", "MyAppExtension"]
-  #          clorox.check_files
+  #          clorox.check ["MyApp", "MyAppTests", "MyAppExtension"]
   #
   # @see barbosa/danger-clorox
   # @tags xcode, clorox, comments
@@ -25,15 +24,15 @@ module Danger
     LEVEL_WARNING = "warning"
     LEVEL_FAILURE = "failure"
 
-    # Allows you to set a level to the checker
-    # Possible values are "warning" and "failure"
-    # defaults to "warning"
+    # Allows you to set a level to the checker.
+    # Possible values are "warning" and "failure".
+    # Defaults to "warning".
     #
     # @return [String]
     attr_accessor :level
 
     # Checks presence of file header comments. Will fail if `clorox` cannot be installed correctly.
-    # Generates a `markdown` list of dirty Objective-C and Swift files
+    # Generates a list of warnings/failures of your Objective-C and Swift files.
     #
     # @param directories [Array<String>] Directories from where clorox will be run. Defaults to current dir.
     # @return [void]
