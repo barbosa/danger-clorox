@@ -16,7 +16,7 @@ A [Danger](https://github.com/danger/danger) plugin for [Clorox](https://github.
 +import Foundation
 ```
 
-:-1:
+:scream:
 
 ## Installation
 
