@@ -4,6 +4,20 @@
 
 A [Danger](https://github.com/danger/danger) plugin for [Clorox](https://github.com/barbosa/clorox) that runs on macOS.
 
+```diff
++//
++//  DirtyFile.swift
++//  MyApp
++//
++//  Created by John Appleseed on 11/12/16.
++//  Copyright © 2016 ACME. All rights reserved.
++//
++
++import Foundation
+```
+
+:-1:
+
 ## Installation
 
 Add this line to your Gemfile:
@@ -33,6 +47,27 @@ Set the script level so it displays failures/warnings in the specific markdown t
 clorox.level = "failure"
 clorox.check ["YourProject", "YourProjectNotificationExtension"]
 ```
+
+### Output
+
+<table>
+  <thead>
+    <tr>
+      <th width="50"></th>
+      <th width="100%" data-danger-table="true" data-kind="Error">
+          1 Error
+      </th>
+     </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td>:no_entry_sign:</td>
+      <td data-sticky="false">MyApp/Source/DirtyFile.swift contains Xcode's file header</td>
+    </tr>
+  </tbody>
+</table>
+<table>
 
 ## Attribution
 
