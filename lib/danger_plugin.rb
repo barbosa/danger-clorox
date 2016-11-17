@@ -39,7 +39,7 @@ module Danger
     #
     def check(directories=["."])
       # Installs clorox if needed
-      system "pip install --target #{ROOT_DIR} clorox" unless clorox_installed?
+      system "pip install --target #{ROOT_DIR} clorox --upgrade" unless clorox_installed?
 
       # Check that this is in the user's PATH after installing
       unless clorox_installed?
