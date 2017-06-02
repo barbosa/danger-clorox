@@ -60,7 +60,6 @@ clorox.check ["YourProject", "YourProjectNotificationExtension"]
      </tr>
   </thead>
   <tbody>
-
     <tr>
       <td>:no_entry_sign:</td>
       <td data-sticky="false">MyApp/Source/DirtyFile.swift contains Xcode's file header</td>
